@@ -3,19 +3,19 @@ import "./index.css";
 const initialFriends = [
   {
     id: 118836,
-    name: "Clark",
+    name: "Sujal",
     image: "https://i.pravatar.cc/48?u=118836",
     balance: -7,
   },
   {
     id: 933372,
-    name: "Sarah",
+    name: "Swojan",
     image: "https://i.pravatar.cc/48?u=933372",
     balance: 20,
   },
   {
     id: 499476,
-    name: "Anthony",
+    name: "Nishan",
     image: "https://i.pravatar.cc/48?u=499476",
     balance: 0,
   },
@@ -52,6 +52,18 @@ export default function App() {
     setSelectedFriend((cur) => (cur?.id === friend.id ? null : friend));
     setShowAddFriend(false);
   }
+
+  function handleSplitBill(value) {
+    setFriends((friend) =>
+      friend.map((friend) =>
+        friend.id === selectedFriend.id
+          ? { ...friend, balance: friend.balance + value }
+          : friend
+      )
+    );
+    setSelectedFriend(null);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
@@ -66,7 +78,13 @@ export default function App() {
           {showAddFriend ? "Close" : "Add Friend"}
         </Button>
       </div>
-      {selectedFriend && <FormSplitBill selectedFriend={selectedFriend} />}
+      {selectedFriend && (
+        <FormSplitBill
+          selectedFriend={selectedFriend}
+          onSplitBill={handleSplitBill}
+          key={selectedFriend.id}
+        />
+      )}
     </div>
   );
 }
@@ -87,7 +105,7 @@ function FriendsList({ friends, onSelection, selectedFriend }) {
 }
 
 function Friend({ friend, onSelection, selectedFriend }) {
-  const activeUser = selectedFriend?.id === friend.id;
+  const activeUser = selectedFriend === friend;
   return (
     <li className={activeUser ? "selected" : ""}>
       <img src={friend.image} alt={friend.name} />
@@ -125,6 +143,7 @@ function FormAddFriend({ onAddFriend }) {
       id: id,
     };
     console.log(newFriend);
+    console.log(newFriend);
     onAddFriend(newFriend);
 
     setName("");
@@ -150,14 +169,20 @@ function FormAddFriend({ onAddFriend }) {
   );
 }
 
-function FormSplitBill({ selectedFriend }) {
+function FormSplitBill({ selectedFriend, onSplitBill }) {
   const [bill, setBill] = useState("");
   const [paidByUser, setPaidByUser] = useState("");
   const paidByFriend = bill ? bill - paidByUser : "";
   const [whoIsPaying, setWhoIsPaying] = useState("user");
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!bill || !paidByFriend) return;
+    onSplitBill(whoIsPaying === "user" ? paidByFriend : -paidByFriend);
+  }
   return (
-    <form className="form-split-bill">
-      <h2>Split a bill with {selectedFriend.name}</h2>
+    <form className="form-split-bill" onSubmit={(e) => handleSubmit(e)}>
+      <h2>Split a cash with {selectedFriend.name}</h2>
 
       <label>💴 Bill value</label>
       <input
@@ -186,7 +211,9 @@ function FormSplitBill({ selectedFriend }) {
         <option value={"user"}>You</option>
         <option value={"friend"}>{selectedFriend.name}</option>
       </select>
-      <Button>Split Bill</Button>
+      <Button>Split Paisa</Button>
     </form>
   );
 }
+// git init git status(after changes) git add git commit git push
+// git origin (ssh path)
